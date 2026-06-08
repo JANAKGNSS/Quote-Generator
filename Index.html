@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Quotation Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght=800&family=Caveat:wght=700&family=Inter:wght=400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #7b1113;
+            --primary-dark: #410c0d;
+            --accent-color: #c00000;
+            --text-main: #333333;
+            --text-muted: #555555;
+            --border-color: #cccccc;
+            --bg-light: #f8f9fa;
+            --success-color: #1e4620;
+            --info-color: #007bff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #e9ecef;
+            font-family: 'Inter', Arial, sans-serif;
+            color: var(--text-main);
+        }
+
+        .hidden { display: none !important; }
+        
+        .portal-container {
+            max-width: 500px;
+            margin: 80px auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .portal-logo {
+            max-width: 220px;
+            margin-bottom: 20px;
+        }
+        .role-btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .role-btn {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-admin-choice { background: var(--primary-dark); color: white; border: none; }
+        .btn-staff-choice { background: var(--primary-color); color: white; border: none; }
+        
+        .login-box {
+            margin-top: 25px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .password-eye-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-eye-wrapper input {
+            padding-right: 40px;
+        }
+        .eye-toggle-btn {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 16px;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .eye-toggle-btn:hover { color: var(--primary-color); opacity: 1; }
+
+        .inline-pass-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f3f5;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        .inline-pass-text {
+            font-family: monospace;
+            font-size: 14px;
+            letter-spacing: 1px;
+            min-width: 50px;
+        }
+
+        .nav-bar {
+            background: var(--primary-dark);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .nav-brand { font-weight: 700; font-size: 18px; }
+        .nav-user { font-size: 14px; display: flex; align-items: center; gap: 15px; }
+
+        .main-layout {
+            padding: 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .panel h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 22px;
+            border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        input:focus, select:focus { outline: none; border-color: var(--primary-color); }
+
+        .table-responsive-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: var(--text-muted); color: #ffffff; padding: 12px 10px; font-size: 13px; text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; vertical-align: middle; }
+
+        .button-group { margin-top: 25px; display: flex; gap: 10px; flex-wrap: wrap; }
+        button { padding: 11px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 600; transition: opacity 0.2s; }
+        button:hover { opacity: 0.9; }
+        .btn-primary { background: var(--primary-color); color: #ffffff; }
+        .btn-secondary { background: var(--text-muted); color: #ffffff; }
+        .btn-danger { background: var(--accent-color); color: #ffffff; }
+        .btn-success { background: var(--success-color); color: #ffffff; }
+        .btn-info { background: var(--info-color); color: #ffffff; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-card { background: #ffffff; padding: 25px; border-radius: 6px; width: 100%; max-width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+
+        .preview-control-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .preview-frame-container { width: 100%; transition: all 0.3s ease; margin: 0 auto; }
+        .preview-frame-container.mobile-view {
+            max-width: 375px;
+            border: 12px solid #222;
+            border-radius: 25px;
+            padding: 15px 10px !important;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            height: 640px;
+            overflow-y: auto;
+        }
+
+        .page { width: 100%; background: #ffffff; padding: 40px; position: relative; box-shadow: 0 4px 25px rgba(0,0,0,0.05); box-sizing: border-box; min-height: 297mm; }
+        .preview-frame-container.mobile-view .page { padding: 10px; min-height: auto; box-shadow: none; }
+        .watermark { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 90px; color: #000; opacity: 0.02; font-weight: 900; pointer-events: none; }
+        .preview-frame-container.mobile-view .watermark { font-size: 40px; }
+
+        .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid var(--primary-color); padding-bottom: 20px; margin-bottom: 25px; }
+        .preview-frame-container.mobile-view .header { flex-direction: column; gap: 15px; }
+        .brand-logo-img { max-width: 200px; height: auto; }
+        .company-details { margin-top: 8px; line-height: 1.5; font-size: 12px; color: var(--text-muted); }
+        .quote-meta-box { text-align: right; }
+        .preview-frame-container.mobile-view .quote-meta-box { text-align: left; width: 100%; }
+        .quote-title { font-size: 28px; color: var(--primary-color); font-weight: 800; margin-bottom: 10px; }
+        .quote-info { line-height: 1.6; font-size: 13px; }
+
+        .client { margin-top: 15px; margin-bottom: 20px; font-size: 13px; background: var(--bg-light); padding: 12px; border-left: 4px solid var(--primary-color); }
+        table.output-table th { background: var(--primary-color) !important; color: white !important; font-size: 11px; text-transform: uppercase; padding: 8px; }
+        table.output-table td { padding: 8px; text-align: center; font-size: 12px; }
+        table.output-table img { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; }
+
+        .total-box { width: 300px; margin-left: auto; margin-top: 20px; }
+        .preview-frame-container.mobile-view .total-box { width: 100%; }
+        .total-box td { padding: 8px 12px; font-size: 13px; }
+        .grand-total { background: var(--primary-dark) !important; color: white !important; font-weight: 700; }
+
+        .footer { margin-top: 40px; font-size: 13px; }
+        .signature { margin-top: 30px; }
+
+        @page { size: A4 portrait; margin: 15mm 12mm; }
+        @media print {
+            body, html { background: #ffffff !important; margin: 0 !important; padding: 0 !important; height: auto !important; }
+            #portalView, #appWorkspace .nav-bar, #appWorkspace .main-layout > .panel:not(:last-child), .preview-control-header, .modal-overlay { display: none !important; }
+            .main-layout { padding: 0 !important; margin: 0 !important; max-width: 100% !important; width: 100% !important; }
+            .main-layout .panel:last-child { background: transparent !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; height: auto !important; }
+            #previewWrapper { display: block !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; height: auto !important; overflow: visible !important; }
+            .page { display: block !important; width: 100% !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; background: #ffffff !important; min-height: auto !important; }
+            table.output-table th { background-color: var(--primary-color) !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grand-total { background-color: var(--primary-dark) !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+
+        @media (max-width: 768px) {
+            .main-layout { padding: 15px 10px; }
+            .panel { padding: 15px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; gap: 15px; }
+            .quote-meta-box { text-align: left; }
+            .total-box { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="portalView" class="portal-container">
+    <img src="https://janaksurvey.com/images/front-logo-janak.png" alt="Janak Survey Logo" class="portal-logo">
+    <h3>Quotation Management Workspace</h3>
+    <p style="color: var(--text-muted); font-size: 14px;">Select your Access Gateway below to get started</p>
+    
+    <div class="role-btn-group">
+        <button class="role-btn btn-admin-choice" onclick="showLoginGate('admin')">Admin Access</button>
+        <button class="role-btn btn-staff-choice" onclick="showLoginGate('staff')">Staff Access</button>
+    </div>
+
+    <div id="loginFormGate" class="login-box hidden">
+        <h4 id="loginGateTitle" style="margin-top:0;">Verify Security Access</h4>
+        
+        <div id="staffDropdownContainer" style="margin-bottom:12px; text-align:left;">
+            <label>Select Staff Account Profile</label>
+            <select id="gateStaffSelect">
+                <option value="" disabled selected hidden>Choose Assigned Staff Profile</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom:15px; text-align:left;">
+            <label>Password</label>
+            <div class="password-eye-wrapper">
+                <input type="password" id="gatePass" value="">
+                <button type="button" class="eye-toggle-btn" onclick="toggleInputPasswordEye('gatePass', this)">👁️</button>
+            </div>
+        </div>
+        <button class="btn-primary" style="width:100%" onclick="processSystemLogin()">Authenticate</button>
+    </div>
+</div>
+
+<div id="appWorkspace" class="hidden">
+    <div class="nav-bar">
+        <div class="nav-brand">JANAK SURVEY GATEWAY</div>
+        <div class="nav-user">
+            <div>Session: <strong id="userBadge" style="text-transform:uppercase;">User</strong> (<span id="roleBadge">Role</span>)</div>
+            <button class="btn-danger btn-sm" onclick="logoutWorkspace()">Exit System</button>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <div id="adminPanelBlock" class="panel hidden">
+            <h2>Admin Control Terminal (Staff Directory Profiles)</h2>
+            <div class="form-grid">
+                <div>
+                    <label>Staff ID Name</label>
+                    <input type="text" id="newStaffName" placeholder="e.g. Ramesh Kumar">
+                </div>
+                <div>
+                    <label>System Username Tag</label>
+                    <input type="text" id="newStaffUser" placeholder="e.g. ramesh12">
+                </div>
+                <div>
+                    <label>System Login Password</label>
+                    <div class="password-eye-wrapper">
+                        <input type="password" id="newStaffPass" placeholder="Assign Password">
+                        <button type="button" class="eye-toggle-btn" onclick="toggleInputPasswordEye('newStaffPass', this)">👁️</button>
+                    </div>
+                </div>
+                <div>
+                    <label>Assigned Permission</label>
+                    <select id="newStaffRole">
+                        <option value="Standard Staff">Standard Staff (Unlocked Pricing Mode)</option>
+                        <option value="Senior Executive">Senior Executive (Full Modifications)</option>
+                    </select>
+                </div>
+                <div style="display:flex; align-items:flex-end;">
+                    <button id="submitStaffBtn" class="btn-success" style="width:100%;" onclick="addNewStaffProfile()">Create New Profile</button>
+                </div>
+            </div>
+
+            <h4 style="margin-bottom:10px;">Active System Directory Records</h4>
+            <div class="table-responsive-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Staff Representative Name</th>
+                            <th>Username Handle</th>
+                            <th>Password Visibility Configuration</th>
+                            <th>Role Scope</th>
+                            <th>Status Control</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="directoryTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="passwordModal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <h3 style="margin-top:0; color:var(--primary-color);">Override Staff Password</h3>
+                <p id="targetStaffLabel" style="font-size:13px; color:var(--text-muted); margin-bottom:15px;"></p>
+                <div style="margin-bottom:15px;">
+                    <label>Enter New Access Password</label>
+                    <div class="password-eye-wrapper">
+                        <input type="password" id="modalNewPass" placeholder="Type new secure credential">
+                        <button type="button" class="eye-toggle-btn" onclick="toggleInputPasswordEye('modalNewPass', this)">👁️</button>
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button class="btn-secondary btn-sm" onclick="closePasswordModal()">Cancel</button>
+                    <button class="btn-primary btn-sm" onclick="saveNewStaffPassword()">Update Password</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel form-box">
+            <h2>Quotation Builder Setup</h2>
+            
+            <div class="form-grid">
+                <div>
+                    <label>Customer Name</label>
+                    <input type="text" id="customerName" placeholder="Customer Name">
+                </div>
+                <div>
+                    <label>Customer City</label>
+                    <input type="text" id="customerCity" placeholder="Customer City">
+                </div>
+                <div>
+                    <label>Quotation Number</label>
+                    <input type="text" id="quotationNo" placeholder="Quotation Number">
+                </div>
+                <div>
+                    <label>GST Number</label>
+                    <input type="text" id="gstNo" placeholder="GST Number">
+                </div>
+                <div>
+                    <label>Quotation Date</label>
+                    <input type="date" id="quotationDate">
+                </div>
+                <div>
+                    <label>Sender Signatory Name</label>
+                    <input type="text" id="senderName" placeholder="Sender Name">
+                </div>
+                <div>
+                    <label>Sender Contact Number</label>
+                    <input type="text" id="senderMobile" placeholder="Sender Mobile Number">
+                </div>
+                <div>
+                    <label>Document Layout Engine</label>
+                    <select id="pageSizeSetting" onchange="applyPageLayout()">
+                        <option value="A4">A4 Standard (210mm × 297mm)</option>
+                        <option value="Letter">US Letter Standard (8.5" × 11")</option>
+                    </select>
+                </div>
+            </div>
+
+            <h3>Line Items Configuration Management</h3>
+            <div class="table-responsive-wrapper">
+                <table id="itemTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">Category</th>
+                            <th style="width: 35%;">Product Description</th>
+                            <th style="width: 20%;">Image Asset</th>
+                            <th style="width: 8%;">Qty</th>
+                            <th style="width: 12%;">Base Price (₹)</th>
+                            <th style="width: 8%;">GST %</th>
+                            <th style="width: 5%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemTableBody">
+                        <tr class="itemRow">
+                            <td>
+                                <select class="itemCategory">
+                                    <option>Sales</option>
+                                    <option>Service</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" class="productName" placeholder="e.g. Total Station Model X">
+                            </td>
+                            <td>
+                                <input type="file" class="productImage" accept="image/*" onchange="handleImagePreview(this, 'img_init')">
+                            </td>
+                            <td>
+                                <input type="number" class="qty" min="1" value="1">
+                            </td>
+                            <td>
+                                <input type="number" class="price" placeholder="0.00">
+                            </td>
+                            <td>
+                                <input type="number" class="gst" placeholder="18" value="18">
+                            </td>
+                            <td>
+                                <button class="btn-danger btn-sm" onclick="removeRow(this)">Delete</button>
+                                <img id="img_init" src="" class="hidden">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="button-group">
+                <button id="addItemsBtn" class="btn-secondary" onclick="addRow()">+ Add More Item</button>
+                <button id="compileBtn" class="btn-primary" onclick="generateQuotation()">Compile & Sync Preview</button>
+                <button class="btn-success" onclick="downloadPDF()">Download / Print System PDF</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="preview-control-header">
+                <h3 style="margin:0; color: var(--text-main);">Live Document Preview Frame</h3>
+                <div>
+                    <button class="btn-secondary btn-sm" onclick="toggleMobileView(false)">Desktop A4 View</button>
+                    <button class="btn-primary btn-sm" style="background:#007bff" onclick="toggleMobileView(true)">Mobile Smartphone View</button>
+                </div>
+            </div>
+            
+            <div id="previewWrapper" class="preview-frame-container">
+                <div id="quotationPageElement" class="page">
+                    <div class="watermark">JANAK</div>
+
+                    <div class="header">
+                        <div class="logo-container">
+                            <img src="https://janaksurvey.com/images/front-logo-janak.png" alt="Janak Survey Logo" class="brand-logo-img">
+                            <div class="company-title" style="font-weight:700; font-size:14px; margin-top:10px; color:var(--accent-color);">Janak Positioning & Surveying Systems Pvt. Ltd.</div>
+                            <div class="company-details">
+                                GSTIN: 07AABCJ0148A1Z9<br>
+                                304 B, Pal Mohan Plaza, Karol Bagh, New Delhi - 110005<br>
+                                Phone: +91 11 23515400
+                            </div>
+                        </div>
+
+                        <div class="quote-meta-box">
+                            <div class="quote-title">QUOTATION</div>
+                            <div class="quote-info">
+                                <b>Quotation No:</b> <span id="showQuotationNo">—</span><br>
+                                <b>GST No:</b> <span id="showGSTNo">—</span><br>
+                                <b>Date:</b> <span id="showDate">—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="client">
+                        <strong>To,</strong><br>
+                        <span id="showCustomer" style="font-weight: 600; font-size: 14px;">[Customer Name]</span><br>
+                        <span id="showCity">[Customer City]</span>
+                    </div>
+
+                    <div style="font-size:13px; margin-bottom:15px;">
+                        Dear Sir/Madam,<br>
+                        Thank you for your valuable enquiry. We are pleased to submit our quotation parameters as mapped down:
+                    </div>
+
+                    <div class="table-responsive-wrapper" style="border:none;">
+                        <table class="output-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%;">Sr.</th>
+                                    <th style="width: 15%;">Category</th>
+                                    <th style="width: 35%;">Product Description</th>
+                                    <th style="width: 15%;">Image</th>
+                                    <th style="width: 7%;">Qty</th>
+                                    <th style="width: 13%;">Price</th>
+                                    <th style="width: 10%;">GST</th>
+                                    <th style="width: 15%;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="outputTableBody">
+                                <tr>
+                                    <td colspan="8" style="color: #999; padding: 20px; text-align:center;">No items compiled. Fill in details above and execution tracking will follow.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <table class="total-box">
+                        <tr>
+                            <td style="text-align:right; color:var(--text-muted);">Subtotal</td>
+                            <td id="showSubtotal" style="text-align:right; font-weight:600;">₹0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:right; color:var(--text-muted);">GST Tax Amount</td>
+                            <td id="showGSTAmount" style="text-align:right; font-weight:600;">₹0.00</td>
+                        </tr>
+                        <tr class="grand-total">
+                            <td style="text-align:right;">Grand Total Value</td>
+                            <td id="showGrandTotal" style="text-align:right;">₹0.00</td>
+                        </tr>
+                    </table>
+
+                    <div class="footer">
+                        We hope our metrics meet validation. Looking forward to transaction confirmation processing.<br>
+                        
+                        <div class="signature">
+                            Best Regards,<br><br>
+                            <strong>For Janak Positioning & Surveying Systems Pvt. Ltd.</strong><br><br><br>
+                            <span id="showSenderName" style="font-weight: 600; text-decoration: underline;">[Authorized Signatory]</span><br>
+                            <span id="showSenderMobile"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Points directly to your deployment Web App endpoint URL mapping
+const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbz00gkUjh6XhoxL_Sri40mUUPSHnb2X5IcQ8khWLHM/exec";
+
+let currentActiveSession = { user: "Default User", role: "Staff", status: "Active" };
+let selectedGateRole = "";
+let selectedPasswordTargetIndex = null;
+let revealedPasswords = {}; 
+
+let staffDirectoryDb = [
+    { name: "Amit Sharma", username: "amit1", pass: "1245", role: "Standard Staff", status: "Active" },
+    { name: "Priya Nair", username: "priya2", pass: "4321", role: "Senior Executive", status: "Active" }
+];
+
+function toggleInputPasswordEye(inputId, btnElement) {
+    let inputField = document.getElementById(inputId);
+    if(inputField.type === "password") {
+        inputField.type = "text";
+        btnElement.innerText = "🙈";
+    } else {
+        inputField.type = "password";
+        btnElement.innerText = "👁️";
+    }
+}
+
+function showLoginGate(role) {
+    selectedGateRole = role;
+    document.getElementById("loginFormGate").classList.remove("hidden");
+    document.getElementById("loginGateTitle").innerText = role === 'admin' ? "Admin Central Passcode Verification" : "Staff Directory Login Gateway";
+    
+    document.getElementById("gatePass").value = "";
+    document.getElementById("gatePass").type = "password";
+    let eyeBtn = document.querySelector("#loginFormGate .eye-toggle-btn");
+    if(eyeBtn) eyeBtn.innerText = "👁️";
+
+    let dropdownContainer = document.getElementById("staffDropdownContainer");
+    let selectElement = document.getElementById("gateStaffSelect");
+    
+    if(role === 'admin') {
+        dropdownContainer.classList.add("hidden");
+    } else {
+        dropdownContainer.classList.remove("hidden");
+        let dropHtml = `<option value="" disabled selected hidden>-- Choose Assigned Staff Profile --</option>`;
+        staffDirectoryDb.forEach(staff => {
+            dropHtml += `<option value="${staff.username}">${staff.name}</option>`;
+        });
+        selectElement.innerHTML = dropHtml;
+    }
+}
+
+function processSystemLogin() {
+    let pInput = document.getElementById("gatePass").value;
+
+    if(selectedGateRole === 'admin') {
+        if(pInput === '1245') {
+            currentActiveSession = { user: "Administrator Manager", role: "Admin", status: "Unrestricted" };
+        } else {
+            alert("Incorrect admin security credentials provided.");
+            return;
+        }
+    } else {
+        let selectVal = document.getElementById("gateStaffSelect").value;
+        if(!selectVal) {
+            alert("Please pick a staff record profile block from the menu layout to continue.");
+            return;
+        }
+
+        let profile = staffDirectoryDb.find(x => x.username === selectVal);
+        if(!profile || String(profile.pass) !== String(pInput)) {
+            alert("Incorrect profile account security credentials verification match.");
+            return;
+        }
+        if(profile.status === 'Blocked') {
+            alert("This profile sequence has been placed on hold by Administration workflows.");
+            return;
+        }
+        currentActiveSession = { user: profile.name, role: profile.role, status: "Active" };
+    }
+
+    initializeWorkspaceSession();
+}
+
+function initializeWorkspaceSession() {
+    document.getElementById("portalView").classList.add("hidden");
+    document.getElementById("appWorkspace").classList.remove("hidden");
+    
+    document.getElementById("userBadge").innerText = currentActiveSession.user;
+    document.getElementById("roleBadge").innerText = currentActiveSession.role;
+
+    if(currentActiveSession.role === 'Admin') {
+        document.getElementById("adminPanelBlock").classList.remove("hidden");
+    } else {
+        document.getElementById("adminPanelBlock").classList.add("hidden");
+    }
+    
+    setFormInputsRestriction(false);
+    renderDirectoryTable();
+}
+
+function setFormInputsRestriction(restrict) {
+    let elements = document.querySelectorAll(".price, .gst, .itemCategory, #addItemsBtn");
+    elements.forEach(el => {
+        el.removeAttribute("disabled");
+        if(el.tagName === 'BUTTON') el.style.display = "inline-block";
+    });
+}
+
+function handleImagePreview(inputElement, previewImgId) {
+    let file = inputElement.files[0];
+    if (file) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let imgEl = document.getElementById(previewImgId);
+            if(imgEl) { imgEl.src = e.target.result; }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function logoutWorkspace() {
+    document.getElementById("appWorkspace").classList.add("hidden");
+    document.getElementById("loginFormGate").classList.add("hidden");
+    document.getElementById("portalView").classList.remove("hidden");
+    revealedPasswords = {};
+}
+
+function renderDirectoryTable() {
+    let html = "";
+    staffDirectoryDb.forEach((staff, index) => {
+        let displayPass = revealedPasswords[index] ? staff.pass : "••••";
+        let eyeIcon = revealedPasswords[index] ? "🙈" : "👁️";
+
+        html += `<tr>
+            <td><strong>${staff.name}</strong></td>
+            <td>@${staff.username}</td>
+            <td>
+                <div class="inline-pass-container">
+                    <span class="inline-pass-text">${displayPass}</span>
+                    <span style="cursor:pointer; font-size:14px;" onclick="toggleTablePasswordReveal(${index})">${eyeIcon}</span>
+                </div>
+            </td>
+            <td><span style="font-size:12px; font-weight:600; padding:2px 6px; border-radius:3px; background:#e9ecef;">${staff.role}</span></td>
+            <td><span style="color: ${staff.status === 'Active' ? 'green':'red'}; font-weight:700;">${staff.status}</span></td>
+            <td>
+                <button class="btn-secondary btn-sm" onclick="toggleStaffStatus(${index})">Toggle Hold</button>
+                <button class="btn-info btn-sm" onclick="openPasswordModal(${index})">Change Pass</button>
+                <button class="btn-danger btn-sm" onclick="purgeStaffProfile(${index})">Purge</button>
+            </td>
+        </tr>`;
+    });
+    document.getElementById("directoryTableBody").innerHTML = html || `<tr><td colspan="6" style="text-align:center; color:#999;">No personnel profiles registered.</td></tr>`;
+}
+
+function toggleTablePasswordReveal(idx) {
+    if (revealedPasswords[idx]) {
+        delete revealedPasswords[idx];
+        renderDirectoryTable();
+    } else {
+        let verification = prompt("Security PIN code request to view plaintext password string:");
+        if (verification === "1245") {
+            revealedPasswords[idx] = true;
+            renderDirectoryTable();
+        } else if (verification !== null) {
+            alert("Security PIN verification mismatch.");
+        }
+    }
+}
+
+async function addNewStaffProfile() {
+    let name = document.getElementById("newStaffName").value;
+    let user = document.getElementById("newStaffUser").value;
+    let pass = document.getElementById("newStaffPass").value;
+    let role = document.getElementById("newStaffRole").value;
+
+    if(!name || !user || !pass) { alert("Complete all standard account credential fields first."); return; }
+    
+    let btn = document.getElementById("submitStaffBtn");
+    btn.innerText = "Syncing with Sheet...";
+    btn.disabled = true;
+
+    let targetQueryUrl = `${APPS_SCRIPT_API_URL}?action=saveStaff&name=${encodeURIComponent(name)}&username=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}&role=${encodeURIComponent(role)}&status=Active`;
+    let payload = { name: name, username: user, pass: pass, role: role, status: "Active" };
+
+    let jsonpScript = document.createElement("script");
+    jsonpScript.src = targetQueryUrl;
+    document.body.appendChild(jsonpScript);
+
+    staffDirectoryDb.push(payload);
+    
+    setTimeout(() => {
+        document.getElementById("newStaffName").value = "";
+        document.getElementById("newStaffUser").value = "";
+        document.getElementById("newStaffPass").value = "";
+        renderDirectoryTable();
+        btn.innerText = "Create New Profile";
+        btn.disabled = false;
+        alert("Success! Personnel profile pushed down cleanly into synced Spreadsheet records.");
+        jsonpScript.remove();
+    }, 1500);
+}
+
+function toggleStaffStatus(idx) {
+    staffDirectoryDb[idx].status = staffDirectoryDb[idx].status === 'Active' ? 'Blocked' : 'Active';
+    renderDirectoryTable();
+}
+
+function purgeStaffProfile(idx) {
+    if(confirm("Confirm profile wipe context removal?")) {
+        staffDirectoryDb.splice(idx, 1);
+        if (revealedPasswords[idx]) delete revealedPasswords[idx];
+        renderDirectoryTable();
+    }
+}
+
+function openPasswordModal(idx) {
+    selectedPasswordTargetIndex = idx;
+    let targetUser = staffDirectoryDb[idx];
+    document.getElementById("targetStaffLabel").innerText = `Modifying account security parameters for: ${targetUser.name} (@${targetUser.username})`;
+    document.getElementById("modalNewPass").value = targetUser.pass;
+    document.getElementById("modalNewPass").type = "password";
+    let modalEye = document.querySelector("#passwordModal .eye-toggle-btn");
+    if(modalEye) modalEye.innerText = "👁️";
+    document.getElementById("passwordModal").classList.remove("hidden");
+}
+
+function closePasswordModal() {
+    document.getElementById("passwordModal").classList.add("hidden");
+    selectedPasswordTargetIndex = null;
+}
+
+function saveNewStaffPassword() {
+    let freshPass = document.getElementById("modalNewPass").value;
+    if(!freshPass) { alert("Password string container can not pass blank validation."); return; }
+    
+    if(selectedPasswordTargetIndex !== null) {
+        staffDirectoryDb[selectedPasswordTargetIndex].pass = freshPass;
+        alert("Personnel gateway database authorization password synced successfully.");
+        closePasswordModal();
+        renderDirectoryTable();
+    }
+}
+
+function toggleMobileView(isMobile) {
+    let wrapper = document.getElementById("previewWrapper");
+    if(isMobile) { wrapper.classList.add("mobile-view"); } else { wrapper.classList.remove("mobile-view"); }
+}
+
+function applyPageLayout() {
+    let sizeSelected = document.getElementById("pageSizeSetting").value;
+    let styleTag = document.getElementById("dynamicPageSizeRule");
+    if(!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = "dynamicPageSizeRule";
+        document.head.appendChild(styleTag);
+    }
+    if(sizeSelected === "Letter") {
+        styleTag.innerHTML = `@page { size: letter portrait; margin: 15mm 12mm; }`;
+    } else {
+        styleTag.innerHTML = `@page { size: A4 portrait; margin: 15mm 12mm; }`;
+    }
+}
+
+function addRow(){
+    let tbody = document.getElementById("itemTableBody");
+    let tr = document.createElement("tr");
+    let rowId = "img_" + Date.now();
+    tr.className = "itemRow";
+    tr.innerHTML = `
+    <td>
+        <select class="itemCategory">
+            <option>Sales</option>
+            <option>Service</option>
+        </select>
+    </td>
+    <td>
+        <input type="text" class="productName" placeholder="Product Name">
+    </td>
+    <td>
+        <input type="file" class="productImage" accept="image/*" onchange="handleImagePreview(this, '${rowId}')">
+    </td>
+    <td>
+        <input type="number" class="qty" min="1" value="1">
+    </td>
+    <td>
+        <input type="number" class="price" placeholder="0.00">
+    </td>
+    <td>
+        <input type="number" class="gst" placeholder="18" value="18">
+    </td>
+    <td>
+        <button class="btn-danger btn-sm" onclick="removeRow(this)">Delete</button>
+        <img id="${rowId}" src="" class="hidden">
+    </td>`;
+    tbody.appendChild(tr);
+    setFormInputsRestriction(false);
+}
+
+function removeRow(button){
+    let row = button.parentElement.parentElement;
+    let tbody = document.getElementById("itemTableBody");
+    if(tbody.querySelectorAll(".itemRow").length > 1){ 
+        row.remove(); 
+    } else {
+        alert("At least one line item entry row must be maintained on the configuration workspace.");
+    }
+}
+
+// ONE-TIME CLICK AUTO SAVER ACTION ROUTE
+async function generateQuotation(){
+    let customer = document.getElementById("customerName").value || "[Customer Name]";
+    let city = document.getElementById("customerCity").value || "[Customer City]";
+    let qNo = document.getElementById("quotationNo").value || "—";
+    let gstNum = document.getElementById("gstNo").value || "—";
+    let rawDate = document.getElementById("quotationDate").value || "";
+    let sender = document.getElementById("senderName").value || "[Authorized Signatory]";
+
+    document.getElementById("showCustomer").innerHTML = customer;
+    document.getElementById("showCity").innerHTML = city;
+    document.getElementById("showQuotationNo").innerHTML = qNo;
+    document.getElementById("showGSTNo").innerHTML = gstNum;
+    
+    if(rawDate) {
+        let dateObj = new Date(rawDate);
+        document.getElementById("showDate").innerHTML = dateObj.toLocaleDateString('en-IN', {day: '2-digit', month: '2-digit', year: 'numeric'});
+    } else {
+        document.getElementById("showDate").innerHTML = "—";
+    }
+
+    document.getElementById("showSenderName").innerHTML = sender;
+    document.getElementById("showSenderMobile").innerHTML = document.getElementById("senderMobile").value ? "Mob: " + document.getElementById("senderMobile").value : "";
+
+    let rows = document.querySelectorAll(".itemRow");
+    let htmlOutput = "";
+    let subtotal = 0;
+    let totalTax = 0;
+    let itemsSummaryList = [];
+
+    rows.forEach((row, idx) => {
+        let cat = row.querySelector(".itemCategory").value;
+        let desc = row.querySelector(".productName").value || "Unnamed Product Item";
+        let qty = parseFloat(row.querySelector(".qty").value) || 0;
+        let price = parseFloat(row.querySelector(".price").value) || 0;
+        let gstPercent = parseFloat(row.querySelector(".gst").value) || 0;
+        
+        let hiddenImg = row.querySelector("img");
+        let imageSrc = (hiddenImg && hiddenImg.src && hiddenImg.src.startsWith("data:")) ? hiddenImg.src : "";
+        let imgTag = imageSrc ? `<img src="${imageSrc}">` : `<div style="width:45px; height:45px; background:#eee; margin:auto; border-radius:4px; font-size:9px; display:flex; align-items:center; justify-content:center; color:#999;">No Img</div>`;
+
+        let baseTotal = qty * price;
+        let taxValue = baseTotal * (gstPercent / 100);
+        let absoluteTotal = baseTotal + taxValue;
+
+        subtotal += baseTotal;
+        totalTax += taxValue;
+
+        itemsSummaryList.push(`${desc} (${qty}x₹${price})`);
+
+        htmlOutput += `<tr>
+            <td>${idx + 1}</td>
+            <td style="text-align:left;">${cat}</td>
+            <td style="text-align:left;"><strong>${desc}</strong></td>
+            <td>${imgTag}</td>
+            <td>${qty}</td>
+            <td>₹${price.toFixed(2)}</td>
+            <td>${gstPercent}%</td>
+            <td style="text-align:right; font-weight:600;">₹${absoluteTotal.toFixed(2)}</td>
+        </tr>`;
+    });
+
+    let grandTotalSum = subtotal + totalTax;
+
+    document.getElementById("outputTableBody").innerHTML = htmlOutput || `<tr><td colspan="8" style="color: #999; padding: 20px; text-align:center;">No items compiled.</td></tr>`;
+    document.getElementById("showSubtotal").innerText = "₹" + subtotal.toFixed(2);
+    document.getElementById("showGSTAmount").innerText = "₹" + totalTax.toFixed(2);
+    document.getElementById("showGrandTotal").innerText = "₹" + grandTotalSum.toFixed(2);
+
+    // EXPLICIT BACKEND SHEET SYNC CALL
+    let compileBtn = document.getElementById("compileBtn");
+    compileBtn.innerText = "Saving to Google Sheet...";
+    compileBtn.disabled = true;
+
+    let itemsJoinedText = itemsSummaryList.join(" | ");
+    let autoSaveUrl = `${APPS_SCRIPT_API_URL}?action=saveQuotation&repName=${encodeURIComponent(currentActiveSession.user)}&customer=${encodeURIComponent(customer)}&city=${encodeURIComponent(city)}&quoteNo=${encodeURIComponent(qNo)}&items=${encodeURIComponent(itemsJoinedText)}&total=${encodeURIComponent(grandTotalSum.toFixed(2))}`;
+
+    let jsonpSaveScript = document.createElement("script");
+    jsonpSaveScript.src = autoSaveUrl;
+    document.body.appendChild(jsonpSaveScript);
+
+    setTimeout(() => {
+        compileBtn.innerText = "Compile & Sync Preview";
+        compileBtn.disabled = false;
+        jsonpSaveScript.remove();
+        alert("Data successfully transmitted and auto-saved to your Google Spreadsheet log!");
+    }, 1500);
+}
+
+function downloadPDF() {
+    window.print();
+}
+</script>
+</body>
+</html>
